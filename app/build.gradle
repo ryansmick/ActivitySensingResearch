@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "tempo.activitysensingresearch"
+        applicationId "research.activitysensingresearch"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1

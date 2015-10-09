@@ -1,4 +1,4 @@
-package tempo.activitysensingresearch;
+package research.activitysensingresearch;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

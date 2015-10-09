@@ -1,4 +1,4 @@
-package tempo.activitysensingresearch;
+package research.activitysensingresearch;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
