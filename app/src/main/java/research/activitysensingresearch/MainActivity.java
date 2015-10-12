@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         private SensorManager mSensorManager;
             private Sensor mAccelerometer;
             private Sensor mGyroscope;
+            private Sensor mGeomagnetic;
 
     // Initialize Buttons for UI
         private Button mStartButton;
@@ -28,8 +29,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // Initialize values for Gyroscope calculation
         private static final String TAG = "MainActivity";
         private static final float NS2S = 1.0f / 1000000000.0f;
-        private final float[] deltaRotationVector = new float[4]();
+        private final float[] deltaRotationVector = new float[4];
         private float timestamp;
+
+    // Declare rotation current
+        private float[] rotationCurrent = new float[9];
+        private float[] inclinationMatrix = new float[9];
+        private float[] gravity = {0, (float) 9.81, 0};
+        private float[] geomagnetic =
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
                 mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
                 mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+                mGeomagnetic = mSensorManager.getDefaultSensor(Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR);
 
         // Start Collecting Sensor Data on push of Start Button
             mStartButton = (Button) findViewById(R.id.start_button);
@@ -48,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View v) {
                 mSensorManager.registerListener(MainActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
                 mSensorManager.registerListener(MainActivity.this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+                mSensorManager.getRotationMatrix(rotationCurrent, inclinationMatrix, gravity,mGeomagnetic );
             }
         });
 
@@ -71,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         // Accelerometer
             // Gravity constants in the x,y,z direction respectively
-            double gravity[] = {0, 9.81, 0};
             double linear_acceleration[] = new double[3];
 
             // Remove the gravity contribution with the high-pass filter.
