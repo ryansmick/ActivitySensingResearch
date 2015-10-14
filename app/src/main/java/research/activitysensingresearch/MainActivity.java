@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -21,6 +22,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             private Sensor mAccelerometer;
             private Sensor mGyroscope;
             private Sensor mGeomagnetic;
+
+    // Initialize Textview
+        TextView acceleration;
+        TextView gyroscope;
 
     // Initialize Buttons for UI
         private Button mStartButton;
@@ -56,7 +61,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View v) {
                 mSensorManager.registerListener(MainActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
                 mSensorManager.registerListener(MainActivity.this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
-                mSensorManager.getRotationMatrix(rotationCurrent, inclinationMatrix, gravity,mGeomagnetic );
+                mSensorManager.getRotationMatrix(rotationCurrent, inclinationMatrix, gravity, mGeomagnetic);
+                acceleration = (TextView)findViewById(R.id.acceleration);
             }
         });
 
@@ -86,6 +92,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             linear_acceleration[0] = event.values[0] - gravity[0];
             linear_acceleration[1] = event.values[1] - gravity[1];
             linear_acceleration[2] = event.values[2] - gravity[2];
+
+            acceleration.setText("X: " + linear_acceleration[0] +
+                                 "\nY: " + linear_acceleration[1] +
+                                 "\nZ: " + linear_acceleration[2]);
 
             Log.d(TAG, linear_acceleration[0] + "," + linear_acceleration[1] + "," + linear_acceleration[2]);
 
@@ -119,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             rotationCurrent = rotationCurrent*deltaRotationMatrix;
 
+            gyroscope.setText("Gyroscope:\nX: " + "\nY: " + "\nZ: ");
         }
 
     }

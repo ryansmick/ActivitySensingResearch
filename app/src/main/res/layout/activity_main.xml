@@ -28,6 +28,22 @@
             android:layout_gravity="center_horizontal"
             />
 
+        <TextView
+            android:id="@+id/acceleration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="28sp"
+            android:text="Accelerometer:\nX: \nY: \nZ: "
+            />
+
+        <TextView
+            android:id="@+id/gyroscope"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="28sp"
+            android:text="Gyroscope:\nX: \nY: \nZ: "
+            />
+
     </LinearLayout>
 
 </RelativeLayout>
