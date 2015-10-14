@@ -33,15 +33,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     // Initialize values for Gyroscope calculation
         private static final String TAG = "MainActivity";
-        private static final float NS2S = 1.0f / 1000000000.0f;
-        private final float[] deltaRotationVector = new float[4];
-        private float timestamp;
 
     // Declare rotation current
-        private float[] rotationCurrent = new float[9];
-        private float[] inclinationMatrix = new float[9];
         private float[] gravity = {0, (float) 9.81, 0};
-        private float[] geomagnetic =
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View v) {
                 mSensorManager.registerListener(MainActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
                 mSensorManager.registerListener(MainActivity.this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
-                mSensorManager.getRotationMatrix(rotationCurrent, inclinationMatrix, gravity, mGeomagnetic);
                 acceleration = (TextView)findViewById(R.id.acceleration);
             }
         });
@@ -85,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent event) {
 
         // Accelerometer
+        if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             // Gravity constants in the x,y,z direction respectively
             double linear_acceleration[] = new double[3];
 
@@ -94,44 +88,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             linear_acceleration[2] = event.values[2] - gravity[2];
 
             acceleration.setText("X: " + linear_acceleration[0] +
-                                 "\nY: " + linear_acceleration[1] +
-                                 "\nZ: " + linear_acceleration[2]);
+                    "\nY: " + linear_acceleration[1] +
+                    "\nZ: " + linear_acceleration[2]);
 
             Log.d(TAG, linear_acceleration[0] + "," + linear_acceleration[1] + "," + linear_acceleration[2]);
-
-        // Gyroscope
-            if (timestamp !=0 ) {
-                final float dT = (event.timestamp - timestamp) * NS2S;
-                // Axis of rotation sample (not normalized yet)
-                    float axisX = event.values[0];
-                    float axisY = event.values[1];
-                    float axisZ = event.values[2];
-
-                // Calculate angular speed of the sample
-                    float omegaMagnitude = (float) Math.sqrt(axisX * axisX + axisY * axisY + axisZ * axisZ);
-
-                // Integrate around this axis with the angular speed by the timestep in order to get a delta
-                // rotation from this sample over the timestep. We will convert this axis-angle representation
-                // of the delta rotation into a quaternion before turning it into the rotation matrix.
-
-                    float thetaOverTwo = omegaMagnitude * dT / 2.0f;
-                    float sinThetaOverTwo = (float) Math.sin(thetaOverTwo);
-                    float cosThetaOverTwo = (float) Math.cos(thetaOverTwo);
-                    deltaRotationVector[0] = sinThetaOverTwo * axisX;
-                    deltaRotationVector[1] = sinThetaOverTwo * axisY;
-                    deltaRotationVector[2] = sinThetaOverTwo * axisZ;
-                    deltaRotationVector[3] = cosThetaOverTwo;
-            }
-
-            timestamp = event.timestamp;
-            float[] deltaRotationMatrix = new float[9];
-            SensorManager.getRotationMatrixFromVector(deltaRotationMatrix, deltaRotationVector);
-
-            rotationCurrent = rotationCurrent*deltaRotationMatrix;
-
-            gyroscope.setText("Gyroscope:\nX: " + "\nY: " + "\nZ: ");
         }
+        // Gyroscope
+        else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
 
+            float X = event.values[0];
+            float Y = event.values[1];
+            float Z = event.values[2];
+
+            gyroscope.setText("Gyroscope:\nX: " + X + "\nY: " + Y + "\nZ: " + Z);
+        }
     }
 
     @Override
@@ -154,5 +124,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private float[] matrixMultiplication(float[] a, float[] b)
+    {
+        float[] result = new float[9];
+
+        result[0] = a[0] * b[0] + a[1] * b[3] + a[2] * b[6];
+        result[1] = a[0] * b[1] + a[1] * b[4] + a[2] * b[7];
+        result[2] = a[0] * b[2] + a[1] * b[5] + a[2] * b[8];
+
+        result[3] = a[3] * b[0] + a[4] * b[3] + a[5] * b[6];
+        result[4] = a[3] * b[1] + a[4] * b[4] + a[5] * b[7];
+        result[5] = a[3] * b[2] + a[4] * b[5] + a[5] * b[8];
+
+        result[6] = a[6] * b[0] + a[7] * b[3] + a[8] * b[6];
+        result[7] = a[6] * b[1] + a[7] * b[4] + a[8] * b[7];
+        result[8] = a[6] * b[2] + a[7] * b[5] + a[8] * b[8];
+
+        return result;
     }
 }
