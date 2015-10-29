@@ -18,24 +18,25 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     // Initialize Sensors
-        private SensorManager mSensorManager;
-            private Sensor mAccelerometer;
-            private Sensor mGyroscope;
-            private Sensor mGeomagnetic;
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private Sensor mGyroscope;
+    private Sensor mMagnetometer;
 
     // Initialize Textview
-        TextView acceleration;
-        TextView gyroscope;
+    TextView acceleration;
+    TextView gyroscope;
+    TextView orientation;
 
     // Initialize Buttons for UI
-        private Button mStartButton;
-        private Button mStopButton;
+    private Button mStartButton;
+    private Button mStopButton;
 
     // Initialize values for Gyroscope calculation
-        private static final String TAG = "MainActivity";
+    private static final String TAG = "MainActivity";
 
     // Declare rotation current
-        private float[] gravity = {0, (float) 9.81, 0};
+    private float[] gravity = {0, (float) 9.81, 0};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +44,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
 
         // Declare Sensors
-            mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-                mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-                mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-                mGeomagnetic = mSensorManager.getDefaultSensor(Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR);
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
 
         // Start Collecting Sensor Data on push of Start Button
             mStartButton = (Button) findViewById(R.id.start_button);
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mSensorManager.registerListener(MainActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
                 mSensorManager.registerListener(MainActivity.this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
                 acceleration = (TextView)findViewById(R.id.acceleration);
+                orientation = (TextView) findViewById(R.id.orientation);
             }
         });
 
@@ -73,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // we probably won't use this
     }
+
+    float[] mGeomagnetic; //geomagnetic sensor
+    float[] mGravity; //gravity sensor
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -102,6 +108,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             gyroscope.setText("Gyroscope:\nX: " + X + "\nY: " + Y + "\nZ: " + Z);
         }
+        else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            //Orientation sensor
+            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+                mGravity = event.values;
+            if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
+                mGeomagnetic = event.values;
+            if (mGravity != null && mGeomagnetic != null) {
+                float R[] = new float[9];
+                float I[] = new float[9];
+                boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+                if (success) {
+                    float orientation2[] = new float[3];
+                    SensorManager.getOrientation(R, orientation2);
+
+                    orientation.setText("Rotation around -z axis " + orientation2[0]); //orientation contains azimut
+                    orientation.append("Rotation around -x axis" + orientation2[1]); //orientation contains pitch
+                    orientation.append("Rotation around y axis" + orientation2[2]); //orientation contains roll
+                }
+            }
+        }
     }
 
     @Override
@@ -124,24 +150,5 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private float[] matrixMultiplication(float[] a, float[] b)
-    {
-        float[] result = new float[9];
-
-        result[0] = a[0] * b[0] + a[1] * b[3] + a[2] * b[6];
-        result[1] = a[0] * b[1] + a[1] * b[4] + a[2] * b[7];
-        result[2] = a[0] * b[2] + a[1] * b[5] + a[2] * b[8];
-
-        result[3] = a[3] * b[0] + a[4] * b[3] + a[5] * b[6];
-        result[4] = a[3] * b[1] + a[4] * b[4] + a[5] * b[7];
-        result[5] = a[3] * b[2] + a[4] * b[5] + a[5] * b[8];
-
-        result[6] = a[6] * b[0] + a[7] * b[3] + a[8] * b[6];
-        result[7] = a[6] * b[1] + a[7] * b[4] + a[8] * b[7];
-        result[8] = a[6] * b[2] + a[7] * b[5] + a[8] * b[8];
-
-        return result;
     }
 }
