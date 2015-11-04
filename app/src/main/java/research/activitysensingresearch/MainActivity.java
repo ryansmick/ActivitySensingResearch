@@ -15,13 +15,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     // Initialize Sensors
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private Sensor mGyroscope;
-    private Sensor mMagnetometer;
 
     // Initialize Textview
     TextView acceleration;
@@ -73,6 +74,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSensorManager.unregisterListener(MainActivity.this);
+    }
+
+    @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // we probably won't use this
     }
@@ -82,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+
+        DecimalFormat df = new DecimalFormat("#.##");
 
         // Accelerometer
         if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -93,11 +102,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             linear_acceleration[1] = event.values[1] - gravity[1];
             linear_acceleration[2] = event.values[2] - gravity[2];
 
-            acceleration.setText("X: " + linear_acceleration[0] +
-                    "\nY: " + linear_acceleration[1] +
-                    "\nZ: " + linear_acceleration[2]);
+            String accelerationText = "Acceleration: \nX: " + df.format(linear_acceleration[0]) +
+                    "\nY: " + df.format(linear_acceleration[1]) +
+                    "\nZ: " + df.format(linear_acceleration[2]);
+            acceleration.setText(accelerationText);
 
-            Log.d(TAG, linear_acceleration[0] + "," + linear_acceleration[1] + "," + linear_acceleration[2]);
+            Log.d(TAG, "Acceleration:" + linear_acceleration[0] + "," + linear_acceleration[1] + "," + linear_acceleration[2]);
         }
         // Gyroscope
         else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
@@ -106,8 +116,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float Y = event.values[1];
             float Z = event.values[2];
 
-            gyroscope.setText("Gyroscope:\nX: " + X + "\nY: " + Y + "\nZ: " + Z);
+            String GyroscopeText = "Gyroscope:\nX: " + df.format(X) + "\nY: " + df.format(Y) + "\nZ: " + df.format(Z);
+            gyroscope.setText(GyroscopeText);
+
+            Log.d(TAG, "Gyroscope:" + X + "," + Y + "," + Z);
         }
+
         else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             //Orientation sensor
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
@@ -122,9 +136,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     float orientation2[] = new float[3];
                     SensorManager.getOrientation(R, orientation2);
 
-                    orientation.setText("Rotation around -z axis " + orientation2[0]); //orientation contains azimut
-                    orientation.append("Rotation around -x axis" + orientation2[1]); //orientation contains pitch
-                    orientation.append("Rotation around y axis" + orientation2[2]); //orientation contains roll
+                    String orientationText = "Orientation: \n -Z: " + df.format(orientation2[0]) +"\n-X: " + df.format(orientation2[1]) + "\nY: " + df.format(orientation2[2]);
+                    orientation.setText(orientationText);
+
+                    Log.d(TAG, "Gyroscope:" + orientation2[0] + "," + orientation2[1] + "," + orientation2[2]);
                 }
             }
         }

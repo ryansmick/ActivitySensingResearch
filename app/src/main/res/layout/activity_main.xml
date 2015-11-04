@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -6,11 +6,12 @@
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin"
                 android:paddingBottom="@dimen/activity_vertical_margin"
-                tools:context=".MainActivity">
+                tools:context=".MainActivity"
+                android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         >
         <Button
@@ -28,29 +29,49 @@
             android:layout_gravity="center_horizontal"
             />
 
-        <TextView
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+            >
+
+            <TextView
             android:id="@+id/acceleration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="28sp"
             android:text="Accelerometer:\nX: \nY: \nZ: "
-            />
+                />
 
-        <TextView
+            <TextView
             android:id="@+id/gyroscope"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="28sp"
             android:text="Gyroscope:\nX: \nY: \nZ: "
-            />
+                />
 
-        <TextView
+            <TextView
             android:id="@+id/orientation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="28sp"
-            android:text="Gyroscope:\nX: \nY: \nZ: "/>
+            android:text="Orientation:\nX: \nY: \nZ: "
+                />
 
-    </LinearLayout>
+        </LinearLayout>
 
-</RelativeLayout>
+    </ScrollView>
+
+</LinearLayout>
