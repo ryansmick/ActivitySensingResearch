@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private Sensor mGyroscope;
+    private Sensor mMagnetometer;
 
     // Initialize Textview
     TextView acceleration;
@@ -58,8 +59,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View v) {
                 mSensorManager.registerListener(MainActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
                 mSensorManager.registerListener(MainActivity.this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+                mSensorManager.registerListener(MainActivity.this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
                 acceleration = (TextView)findViewById(R.id.acceleration);
                 orientation = (TextView) findViewById(R.id.orientation);
+                gyroscope = (TextView) findViewById(R.id.gyroscope);
             }
         });
 
@@ -110,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Log.d(TAG, "Acceleration:" + linear_acceleration[0] + "," + linear_acceleration[1] + "," + linear_acceleration[2]);
         }
         // Gyroscope
-        else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+        if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
 
             float X = event.values[0];
             float Y = event.values[1];
@@ -122,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Log.d(TAG, "Gyroscope:" + X + "," + Y + "," + Z);
         }
 
-        else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             //Orientation sensor
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
                 mGravity = event.values;
