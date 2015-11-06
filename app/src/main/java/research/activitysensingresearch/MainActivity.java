@@ -15,6 +15,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
@@ -29,6 +33,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TextView acceleration;
     TextView gyroscope;
     TextView orientation;
+
+    //Initialize File object and file output stream
+    File accelerometerOutputFile;
+    File gyroscopeOutputFile;
+    File magnetometerOutputFile;
+
+    FileOutputStream mAccelerometerFileOutputStream;
+    FileOutputStream mGyroscopeFileOutputStream;
+    FileOutputStream mMagnetometerFileOutputStream;
+
+    String accelerometerFilename = "Accelerometer_Data";
+    String gyroscopeFilename = "Gyroscope_Data";
+    String magnetometerFilename = "Magnetometer_Data";
 
     // Initialize Buttons for UI
     private Button mStartButton;
@@ -74,12 +91,53 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     mSensorManager.unregisterListener(MainActivity.this);
             }
         });
+
+        try {
+            mAccelerometerFileOutputStream = openFileOutput(accelerometerFilename, MODE_APPEND);
+        }
+        catch(FileNotFoundException e){
+            e.printStackTrace();
+        }
+
+        try {
+            mGyroscopeFileOutputStream = openFileOutput(gyroscopeFilename, MODE_APPEND);
+        }
+        catch(FileNotFoundException e){
+            e.printStackTrace();
+        }
+
+        try {
+            mMagnetometerFileOutputStream = openFileOutput(magnetometerFilename, MODE_APPEND);
+        }
+        catch(FileNotFoundException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mSensorManager.unregisterListener(MainActivity.this);
+        try{
+            mAccelerometerFileOutputStream.close();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+
+        try{
+            mGyroscopeFileOutputStream.close();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+
+        try{
+            mMagnetometerFileOutputStream.close();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -111,6 +169,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             acceleration.setText(accelerationText);
 
             Log.d(TAG, "Acceleration:" + linear_acceleration[0] + "," + linear_acceleration[1] + "," + linear_acceleration[2]);
+
+            byte[] accelerationDataByteArray = accelerationText.getBytes();
+            try {
+                mAccelerometerFileOutputStream.write(accelerationDataByteArray);
+            }
+            catch(IOException e){
+                e.printStackTrace();
+            }
         }
         // Gyroscope
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
@@ -123,6 +189,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             gyroscope.setText(GyroscopeText);
 
             Log.d(TAG, "Gyroscope:" + X + "," + Y + "," + Z);
+
+            byte[] gyroscopeDataByteArray = GyroscopeText.getBytes();
+            try {
+                mGyroscopeFileOutputStream.write(gyroscopeDataByteArray);
+            }
+            catch(IOException e){
+                e.printStackTrace();
+            }
         }
 
         if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
@@ -143,6 +217,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     orientation.setText(orientationText);
 
                     Log.d(TAG, "Gyroscope:" + orientation2[0] + "," + orientation2[1] + "," + orientation2[2]);
+
+                    byte[] magnetometerDataByteArray = orientationText.getBytes();
+                    try {
+                        mMagnetometerFileOutputStream.write(magnetometerDataByteArray);
+                    }
+                    catch(IOException e){
+                        e.printStackTrace();
+                    }
                 }
             }
         }
