@@ -34,19 +34,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TextView gyroscope;
     TextView orientation;
 
-    //Initialize File object and file output stream
-    File accelerometerOutputFile;
-    File gyroscopeOutputFile;
-    File magnetometerOutputFile;
-
-    FileOutputStream mAccelerometerFileOutputStream;
-    FileOutputStream mGyroscopeFileOutputStream;
-    FileOutputStream mMagnetometerFileOutputStream;
-
-    String accelerometerFilename = "Accelerometer_Data";
-    String gyroscopeFilename = "Gyroscope_Data";
-    String magnetometerFilename = "Magnetometer_Data";
-
     // Initialize Buttons for UI
     private Button mStartButton;
     private Button mStopButton;
@@ -72,77 +59,36 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Start Collecting Sensor Data on push of Start Button
             mStartButton = (Button) findViewById(R.id.start_button);
             mStartButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSensorManager.registerListener(MainActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-                mSensorManager.registerListener(MainActivity.this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
-                mSensorManager.registerListener(MainActivity.this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
-                acceleration = (TextView)findViewById(R.id.acceleration);
-                orientation = (TextView) findViewById(R.id.orientation);
-                gyroscope = (TextView) findViewById(R.id.gyroscope);
-            }
-        });
+                @Override
+                public void onClick(View v) {
+                    mSensorManager.registerListener(MainActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+                    mSensorManager.registerListener(MainActivity.this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+                    mSensorManager.registerListener(MainActivity.this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+                    acceleration = (TextView)findViewById(R.id.acceleration);
+                    orientation = (TextView) findViewById(R.id.orientation);
+                    gyroscope = (TextView) findViewById(R.id.gyroscope);
+                }
+            });
 
         // Stop Collecting Sensor Data on push of Stop Button
             mStopButton = (Button) findViewById(R.id.stop_button);
             mStopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                @Override
+                public void onClick(View v) {
                     mSensorManager.unregisterListener(MainActivity.this);
-            }
-        });
+                }
+            });
 
-        try {
-            mAccelerometerFileOutputStream = openFileOutput(accelerometerFilename, MODE_APPEND);
-        }
-        catch(FileNotFoundException e){
-            e.printStackTrace();
-        }
-
-        try {
-            mGyroscopeFileOutputStream = openFileOutput(gyroscopeFilename, MODE_APPEND);
-        }
-        catch(FileNotFoundException e){
-            e.printStackTrace();
-        }
-
-        try {
-            mMagnetometerFileOutputStream = openFileOutput(magnetometerFilename, MODE_APPEND);
-        }
-        catch(FileNotFoundException e){
-            e.printStackTrace();
-        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mSensorManager.unregisterListener(MainActivity.this);
-        try{
-            mAccelerometerFileOutputStream.close();
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-
-        try{
-            mGyroscopeFileOutputStream.close();
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-
-        try{
-            mMagnetometerFileOutputStream.close();
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // we probably won't use this
     }
 
     float[] mGeomagnetic; //geomagnetic sensor
@@ -170,13 +116,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             Log.d(TAG, "Acceleration:" + linear_acceleration[0] + "," + linear_acceleration[1] + "," + linear_acceleration[2]);
 
-            byte[] accelerationDataByteArray = accelerationText.getBytes();
-            try {
-                mAccelerometerFileOutputStream.write(accelerationDataByteArray);
-            }
-            catch(IOException e){
-                e.printStackTrace();
-            }
         }
         // Gyroscope
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
@@ -189,14 +128,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             gyroscope.setText(GyroscopeText);
 
             Log.d(TAG, "Gyroscope:" + X + "," + Y + "," + Z);
-
-            byte[] gyroscopeDataByteArray = GyroscopeText.getBytes();
-            try {
-                mGyroscopeFileOutputStream.write(gyroscopeDataByteArray);
-            }
-            catch(IOException e){
-                e.printStackTrace();
-            }
         }
 
         if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
@@ -217,14 +148,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     orientation.setText(orientationText);
 
                     Log.d(TAG, "Gyroscope:" + orientation2[0] + "," + orientation2[1] + "," + orientation2[2]);
-
-                    byte[] magnetometerDataByteArray = orientationText.getBytes();
-                    try {
-                        mMagnetometerFileOutputStream.write(magnetometerDataByteArray);
-                    }
-                    catch(IOException e){
-                        e.printStackTrace();
-                    }
+                    
                 }
             }
         }
