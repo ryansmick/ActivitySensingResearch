@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import research.activitysensingresearch.SensorDatabaseHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -61,9 +62,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mStartButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSensorManager.registerListener(MainActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-                    mSensorManager.registerListener(MainActivity.this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
-                    mSensorManager.registerListener(MainActivity.this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+                    mSensorManager.registerListener(MainActivity.this, mAccelerometer, 50000000);
+                    mSensorManager.registerListener(MainActivity.this, mGyroscope, 50000000);
+                    mSensorManager.registerListener(MainActivity.this, mMagnetometer, 50000000);
                     acceleration = (TextView)findViewById(R.id.acceleration);
                     orientation = (TextView) findViewById(R.id.orientation);
                     gyroscope = (TextView) findViewById(R.id.gyroscope);
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent event) {
 
         DecimalFormat df = new DecimalFormat("#.##");
+        SensorDatabaseHelper instance = SensorDatabaseHelper.getInstance(getApplicationContext());
 
         // Accelerometer
         if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -116,6 +118,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             Log.d(TAG, "Acceleration:" + linear_acceleration[0] + "," + linear_acceleration[1] + "," + linear_acceleration[2]);
 
+            AccelerometerData aData = new AccelerometerData(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2]);
+            instance.addAccelerometerData( aData );
         }
         // Gyroscope
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
@@ -128,6 +132,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             gyroscope.setText(GyroscopeText);
 
             Log.d(TAG, "Gyroscope:" + X + "," + Y + "," + Z);
+            GyroscopeData gData = new GyroscopeData( X, Y, Z);
+            instance.addGyroscopeData( gData );
         }
 
         if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
@@ -148,7 +154,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     orientation.setText(orientationText);
 
                     Log.d(TAG, "Gyroscope:" + orientation2[0] + "," + orientation2[1] + "," + orientation2[2]);
-                    
+
+                    MagnetometerData mData = new MagnetometerData( orientation2[0], orientation2[1], orientation2[2]) ;
+                    instance.addMagnetometerData( mData );
                 }
             }
         }
