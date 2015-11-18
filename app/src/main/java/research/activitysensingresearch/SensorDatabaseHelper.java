@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.hardware.Sensor;
 import android.util.Log;
 
 /**
@@ -50,7 +49,6 @@ public class SensorDatabaseHelper extends SQLiteOpenHelper{
     public static synchronized SensorDatabaseHelper getInstance(Context context) {
         // Use the application context, which will ensure that you
         // don't accidentally leak an Activity's context.
-        // See this article for more information: http://bit.ly/6LRzfx
         if (sInstance == null) {
             sInstance = new SensorDatabaseHelper(context.getApplicationContext());
         }

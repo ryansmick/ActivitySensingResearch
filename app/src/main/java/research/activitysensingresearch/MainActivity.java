@@ -56,6 +56,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
+        acceleration = (TextView)findViewById(R.id.acceleration);
+        orientation = (TextView) findViewById(R.id.orientation);
+        gyroscope = (TextView) findViewById(R.id.gyroscope);
+
+        if(savedInstanceState.getBoolean("InProgress") == true){
+            mSensorManager.registerListener(MainActivity.this, mAccelerometer, 50000000);
+            mSensorManager.registerListener(MainActivity.this, mGyroscope, 50000000);
+            mSensorManager.registerListener(MainActivity.this, mMagnetometer, 50000000);
+        }
+
 
         // Start Collecting Sensor Data on push of Start Button
             mStartButton = (Button) findViewById(R.id.start_button);
@@ -65,9 +75,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     mSensorManager.registerListener(MainActivity.this, mAccelerometer, 50000000);
                     mSensorManager.registerListener(MainActivity.this, mGyroscope, 50000000);
                     mSensorManager.registerListener(MainActivity.this, mMagnetometer, 50000000);
-                    acceleration = (TextView)findViewById(R.id.acceleration);
-                    orientation = (TextView) findViewById(R.id.orientation);
-                    gyroscope = (TextView) findViewById(R.id.gyroscope);
                 }
             });
 
@@ -119,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Log.d(TAG, "Acceleration:" + linear_acceleration[0] + "," + linear_acceleration[1] + "," + linear_acceleration[2]);
 
             AccelerometerData aData = new AccelerometerData(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2]);
-            instance.addAccelerometerData( aData );
+            instance.addAccelerometerData(aData);
         }
         // Gyroscope
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
@@ -133,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             Log.d(TAG, "Gyroscope:" + X + "," + Y + "," + Z);
             GyroscopeData gData = new GyroscopeData( X, Y, Z);
-            instance.addGyroscopeData( gData );
+            instance.addGyroscopeData(gData);
         }
 
         if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
@@ -156,10 +163,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     Log.d(TAG, "Gyroscope:" + orientation2[0] + "," + orientation2[1] + "," + orientation2[2]);
 
                     MagnetometerData mData = new MagnetometerData( orientation2[0], orientation2[1], orientation2[2]) ;
-                    instance.addMagnetometerData( mData );
+                    instance.addMagnetometerData(mData);
                 }
             }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("InProgress", true);
     }
 
     @Override
