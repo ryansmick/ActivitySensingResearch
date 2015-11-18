@@ -123,6 +123,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             linear_acceleration[1] = event.values[1] - gravity[1];
             linear_acceleration[2] = event.values[2] - gravity[2];
 
+            //Set mGravity to the most recent accelerometer readings
+            for(int i = 0; i < 2; i++){
+                mGravity[i] = (float) linear_acceleration[i];
+            }
+
             String accelerationText = "Acceleration: \nX: " + df.format(linear_acceleration[0]) +
                     "\nY: " + df.format(linear_acceleration[1]) +
                     "\nZ: " + df.format(linear_acceleration[2]);
@@ -150,14 +155,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             //Orientation sensor
-            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
-                mGravity = event.values;
-            if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
-                mGeomagnetic = event.values;
-            if (mGravity != null && mGeomagnetic != null) {
+            if (mGravity != null) {
                 float R[] = new float[9];
                 float I[] = new float[9];
-                boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+                boolean success = SensorManager.getRotationMatrix(R, I, mGravity, event.values);
                 if (success) {
                     float orientation2[] = new float[3];
                     SensorManager.getOrientation(R, orientation2);
@@ -165,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     String orientationText = "Orientation: \n -Z: " + df.format(orientation2[0]) +"\n-X: " + df.format(orientation2[1]) + "\nY: " + df.format(orientation2[2]);
                     orientation.setText(orientationText);
 
-                    Log.d(TAG, "Gyroscope:" + orientation2[0] + "," + orientation2[1] + "," + orientation2[2]);
+                    Log.d(TAG, "Orientation:" + orientation2[0] + "," + orientation2[1] + "," + orientation2[2]);
 
                     MagnetometerData mData = new MagnetometerData( orientation2[0], orientation2[1], orientation2[2]) ;
                     instance.addMagnetometerData(mData);
