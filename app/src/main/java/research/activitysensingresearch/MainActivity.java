@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroscope = (TextView) findViewById(R.id.gyroscope);
 
         try {
-            if (savedInstanceState.getBoolean("InProgress") == true) {
+            if (savedInstanceState.getBoolean("InProgress")) {
                 mSensorManager.registerListener(MainActivity.this, mAccelerometer, 50000000);
                 mSensorManager.registerListener(MainActivity.this, mGyroscope, 50000000);
                 mSensorManager.registerListener(MainActivity.this, mMagnetometer, 50000000);
@@ -104,8 +104,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
-    float[] mGeomagnetic; //geomagnetic sensor
-    float[] mGravity; //gravity sensor
+    float[] mGravity=new float[3]; //gravity sensor
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -124,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             linear_acceleration[2] = event.values[2] - gravity[2];
 
             //Set mGravity to the most recent accelerometer readings
-            for(int i = 0; i < 2; i++){
+            for(int i = 0; i < 3; i++){
                 mGravity[i] = (float) linear_acceleration[i];
             }
 
