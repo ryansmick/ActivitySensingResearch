@@ -60,10 +60,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         orientation = (TextView) findViewById(R.id.orientation);
         gyroscope = (TextView) findViewById(R.id.gyroscope);
 
-        if(savedInstanceState.getBoolean("InProgress") == true){
-            mSensorManager.registerListener(MainActivity.this, mAccelerometer, 50000000);
-            mSensorManager.registerListener(MainActivity.this, mGyroscope, 50000000);
-            mSensorManager.registerListener(MainActivity.this, mMagnetometer, 50000000);
+        try {
+            if (savedInstanceState.getBoolean("InProgress") == true) {
+                mSensorManager.registerListener(MainActivity.this, mAccelerometer, 50000000);
+                mSensorManager.registerListener(MainActivity.this, mGyroscope, 50000000);
+                mSensorManager.registerListener(MainActivity.this, mMagnetometer, 50000000);
+            }
+        }
+        catch(NullPointerException e){
+            e.printStackTrace();
         }
 
 
