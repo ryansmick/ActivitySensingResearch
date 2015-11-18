@@ -62,9 +62,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         try {
             if (savedInstanceState.getBoolean("InProgress")) {
-                mSensorManager.registerListener(MainActivity.this, mAccelerometer, 50000000);
-                mSensorManager.registerListener(MainActivity.this, mGyroscope, 50000000);
-                mSensorManager.registerListener(MainActivity.this, mMagnetometer, 50000000);
+                mSensorManager.registerListener(MainActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+                mSensorManager.registerListener(MainActivity.this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+                mSensorManager.registerListener(MainActivity.this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
             }
         }
         catch(NullPointerException e){
@@ -77,9 +77,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mStartButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSensorManager.registerListener(MainActivity.this, mAccelerometer, 50000000);
-                    mSensorManager.registerListener(MainActivity.this, mGyroscope, 50000000);
-                    mSensorManager.registerListener(MainActivity.this, mMagnetometer, 50000000);
+                    mSensorManager.registerListener(MainActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+                    mSensorManager.registerListener(MainActivity.this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+                    mSensorManager.registerListener(MainActivity.this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
                 }
             });
 
