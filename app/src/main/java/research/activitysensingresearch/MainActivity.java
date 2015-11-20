@@ -30,6 +30,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor mGyroscope;
     private Sensor mMagnetometer;
 
+    //Declare variable to hold current SensorDatabaseHelper instance
+    SensorDatabaseHelper instance;
+
     // Initialize Textview
     TextView acceleration;
     TextView gyroscope;
@@ -92,6 +95,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             });
 
+        //Get the current instance of the SensorDatabaseHelper
+        instance = SensorDatabaseHelper.getInstance(getApplicationContext());
+
+        //Delete all rows in all tables to correct current issue
+        instance.deleteAllRowsFromAllTables();
+
     }
 
     @Override
@@ -110,7 +119,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent event) {
 
         DecimalFormat df = new DecimalFormat("#.##");
-        SensorDatabaseHelper instance = SensorDatabaseHelper.getInstance(getApplicationContext());
 
         // Accelerometer
         if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {

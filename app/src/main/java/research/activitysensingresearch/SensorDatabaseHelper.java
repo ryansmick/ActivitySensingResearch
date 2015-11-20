@@ -167,6 +167,22 @@ public class SensorDatabaseHelper extends SQLiteOpenHelper{
             db.endTransaction();
         }
     }
+
+    public void deleteAllRowsFromAllTables() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            // Order of deletions is important when foreign key relationships exist.
+            db.delete(TABLE_ACCELEROMETER, null, null);
+            db.delete(TABLE_GYROSCOPE, null, null);
+            db.delete(TABLE_MAGNETOMETER, null, null);
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.d(TAG, "Error while trying to delete all rows from all tables");
+        } finally {
+            db.endTransaction();
+        }
+    }
 }
 
 
