@@ -33,6 +33,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //Declare variable to hold current SensorDatabaseHelper instance
     SensorDatabaseHelper instance;
 
+    //Declare timers for sensors
+    SensorTimer accelTimer = new SensorTimer(false);
+    SensorTimer gyroTimer = new SensorTimer(false);
+    SensorTimer orientationTimer = new SensorTimer(false);
+
+    //Timer delay in milliseconds
+    int timerDelay = 500;
+
+
     // Initialize Textview
     TextView acceleration;
     TextView gyroscope;
@@ -68,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mSensorManager.registerListener(MainActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
                 mSensorManager.registerListener(MainActivity.this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
                 mSensorManager.registerListener(MainActivity.this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+                accelTimer.start();
+                gyroTimer.start();
+                orientationTimer.start();
             }
         }
         catch(NullPointerException e){
@@ -83,6 +95,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     mSensorManager.registerListener(MainActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
                     mSensorManager.registerListener(MainActivity.this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
                     mSensorManager.registerListener(MainActivity.this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+                    accelTimer.start();
+                    gyroTimer.start();
+                    orientationTimer.start();
                 }
             });
 
@@ -121,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         DecimalFormat df = new DecimalFormat("#.##");
 
         // Accelerometer
-        if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+        if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && accelTimer.stop() >= timerDelay) {
             // Gravity constants in the x,y,z direction respectively
             double linear_acceleration[] = new double[3];
 
@@ -144,9 +159,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             AccelerometerData aData = new AccelerometerData(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2]);
             instance.addAccelerometerData(aData);
+            accelTimer.start();
         }
         // Gyroscope
-        if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+        if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE && gyroTimer.stop() >= timerDelay) {
 
             float X = event.values[0];
             float Y = event.values[1];
@@ -158,9 +174,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Log.d(TAG, "Gyroscope:" + X + "," + Y + "," + Z);
             GyroscopeData gData = new GyroscopeData( X, Y, Z);
             instance.addGyroscopeData(gData);
+            gyroTimer.start();
         }
 
-        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD && orientationTimer.stop() >= timerDelay) {
             //Orientation sensor
             if (mGravity != null) {
                 float R[] = new float[9];
@@ -179,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     instance.addMagnetometerData(mData);
                 }
             }
+            orientationTimer.start();
         }
     }
 
