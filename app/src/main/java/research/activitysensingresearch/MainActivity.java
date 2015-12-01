@@ -38,6 +38,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     SensorTimer gyroTimer = new SensorTimer(false);
     SensorTimer orientationTimer = new SensorTimer(false);
 
+    //Sensor data
+    SensorData mData = new SensorData();
+
+    Boolean hasAccelData = false;
+    Boolean hasGyroData = false;
+    Boolean hasMagnetData = false;
+
     //Timer delay in milliseconds
     int timerDelay = 500;
 
@@ -157,8 +164,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             Log.d(TAG, "Acceleration:" + linear_acceleration[0] + "," + linear_acceleration[1] + "," + linear_acceleration[2]);
 
-            AccelerometerData aData = new AccelerometerData(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2]);
-            instance.addAccelerometerData(aData);
+            mData.setAccelerometerData(new AccelerometerData(linear_acceleration[0], linear_acceleration[1], linear_acceleration[2]));
+            hasAccelData = true;
             accelTimer.start();
         }
         // Gyroscope
@@ -172,8 +179,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             gyroscope.setText(GyroscopeText);
 
             Log.d(TAG, "Gyroscope:" + X + "," + Y + "," + Z);
-            GyroscopeData gData = new GyroscopeData( X, Y, Z);
-            instance.addGyroscopeData(gData);
+            mData.setGyroscopeData(new GyroscopeData( X, Y, Z));
+            hasGyroData = true;
             gyroTimer.start();
         }
 
@@ -192,11 +199,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                     Log.d(TAG, "Orientation:" + orientation2[0] + "," + orientation2[1] + "," + orientation2[2]);
 
-                    MagnetometerData mData = new MagnetometerData( orientation2[0], orientation2[1], orientation2[2]) ;
-                    instance.addMagnetometerData(mData);
+                    mData.setMagnetometerData(new MagnetometerData( orientation2[0], orientation2[1], orientation2[2]));
+                    hasMagnetData = true;
                 }
             }
             orientationTimer.start();
+        }
+
+        if(hasAccelData && hasGyroData && hasMagnetData){
+            instance.addSensorData(mData);
+            hasAccelData = false;
+            hasGyroData = false;
+            hasMagnetData = false;
         }
     }
 
