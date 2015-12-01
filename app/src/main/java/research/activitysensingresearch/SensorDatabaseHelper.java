@@ -17,27 +17,24 @@ public class SensorDatabaseHelper extends SQLiteOpenHelper{
 
     // Database Info
     private static final String DATABASE_NAME = "sensorDatabase";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Table Names
     private static final String TABLE_ACCELEROMETER = "accelerometer";
     private static final String TABLE_GYROSCOPE = "gyroscope";
     private static final String TABLE_MAGNETOMETER = "magnetometer";
+    private static final String TABLE_SENSORDATA = "sensorData";
 
-    // Accelerometer Table Columns
-    private static final String KEY_ACCELEROMETER_ID = "id";
-    private static final String KEY_ACCELEROMETER_X_VALUE = "X";
-    private static final String KEY_ACCELEROMETER_Y_VALUE = "Y";
-    private static final String KEY_ACCELEROMETER_Z_VALUE = "Z";
+    // sensorData Table Columns
+    private static final String KEY_ID = "id";
+    private static final String KEY_ACCELEROMETER_X_VALUE = "accelerometerX";
+    private static final String KEY_ACCELEROMETER_Y_VALUE = "accelerometerY";
+    private static final String KEY_ACCELEROMETER_Z_VALUE = "accelerometerZ";
 
-    // Gyroscope Table Columns
-    private static final String KEY_GYROSCOPE_ID = "id";
-    private static final String KEY_GYROSCOPE_X_VALUE = "X";
-    private static final String KEY_GYROSCOPE_Y_VALUE = "Y";
-    private static final String KEY_GYROSCOPE_Z_VALUE = "Z";
+    private static final String KEY_GYROSCOPE_X_VALUE = "gyroscopeX";
+    private static final String KEY_GYROSCOPE_Y_VALUE = "gyroscopeY";
+    private static final String KEY_GYROSCOPE_Z_VALUE = "gyroscopeZ";
 
-    // Magnetometer Table Columns
-    private static final String KEY_MAGNETOMETER_ID = "id";
     private static final String KEY_AZIMUTH = "azimuth";
     private static final String KEY_PITCH = "pitch";
     private static final String KEY_ROLL = "roll";
@@ -58,33 +55,21 @@ public class SensorDatabaseHelper extends SQLiteOpenHelper{
     @Override
     //Called when database is created for the first time. Creates the tables to store sensor readings
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_ACCEL_TABLE = "CREATE TABLE " + TABLE_ACCELEROMETER +
+        String CREATE_SENSORDATA_TABLE = "CREATE TABLE " + TABLE_SENSORDATA +
                 "(" +
-                KEY_ACCELEROMETER_ID + " INTEGER PRIMARY KEY," + // Define a primary key
+                KEY_ID + " INTEGER PRIMARY KEY," + // Define a primary key
                 KEY_ACCELEROMETER_X_VALUE + " REAL ," +
                 KEY_ACCELEROMETER_Y_VALUE + " REAL ," +
                 KEY_ACCELEROMETER_Z_VALUE + " REAL" +
-                ")";
-
-        String CREATE_GYRO_TABLE = "CREATE TABLE " + TABLE_GYROSCOPE +
-                "(" +
-                KEY_GYROSCOPE_ID + " INTEGER PRIMARY KEY," + // Define a primary key
                 KEY_GYROSCOPE_X_VALUE + " REAL ," +
                 KEY_GYROSCOPE_Y_VALUE + " REAL ," +
                 KEY_GYROSCOPE_Z_VALUE + " REAL" +
-                ")";
-
-        String CREATE_MAGNETOMETER_TABLE = "CREATE TABLE " + TABLE_MAGNETOMETER +
-                "(" +
-                KEY_MAGNETOMETER_ID + " INTEGER PRIMARY KEY," + // Define a primary key
                 KEY_AZIMUTH + " REAL ," +
                 KEY_PITCH + " REAL ," +
                 KEY_ROLL + " REAL" +
                 ")";
 
-        db.execSQL(CREATE_ACCEL_TABLE);
-        db.execSQL(CREATE_GYRO_TABLE);
-        db.execSQL(CREATE_MAGNETOMETER_TABLE);
+        db.execSQL(CREATE_SENSORDATA_TABLE);
     }
 
     @Override
@@ -95,11 +80,12 @@ public class SensorDatabaseHelper extends SQLiteOpenHelper{
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACCELEROMETER);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_GYROSCOPE);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_MAGNETOMETER);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_SENSORDATA);
             onCreate(db);
         }
     }
 
-    public void addAccelerometerData(AccelerometerData data) {
+    public void addSensorData(SensorData data){
         // Create and/or open the database for writing
         SQLiteDatabase db = getWritableDatabase();
 
@@ -109,60 +95,20 @@ public class SensorDatabaseHelper extends SQLiteOpenHelper{
         try {
 
             ContentValues values = new ContentValues();
-            values.put(KEY_ACCELEROMETER_X_VALUE, data.X);
-            values.put(KEY_ACCELEROMETER_Y_VALUE, data.Y);
-            values.put(KEY_ACCELEROMETER_Z_VALUE, data.Z);
+            values.put(KEY_ACCELEROMETER_X_VALUE, data.getAccelerometerData().getX());
+            values.put(KEY_ACCELEROMETER_Y_VALUE, data.getAccelerometerData().getY());
+            values.put(KEY_ACCELEROMETER_Z_VALUE, data.getAccelerometerData().getZ());
+            values.put(KEY_GYROSCOPE_X_VALUE, data.getGyroscopeData().getX());
+            values.put(KEY_GYROSCOPE_Y_VALUE, data.getGyroscopeData().getY());
+            values.put(KEY_GYROSCOPE_Z_VALUE, data.getGyroscopeData().getZ());
+            values.put(KEY_AZIMUTH, data.getMagnetometerData().getAzimuth());
+            values.put(KEY_PITCH, data.getMagnetometerData().getPitch());
+            values.put(KEY_ROLL, data.getMagnetometerData().getRoll());
 
-            db.insertOrThrow(TABLE_ACCELEROMETER, null, values);
+            db.insertOrThrow(TABLE_SENSORDATA, null, values);
             db.setTransactionSuccessful();
         } catch (Exception e) {
-            Log.d(TAG, "Error while trying to add accelerometer to database");
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public void addGyroscopeData(GyroscopeData data) {
-        // Create and/or open the database for writing
-        SQLiteDatabase db = getWritableDatabase();
-
-        // It's a good idea to wrap our insert in a transaction. This helps with performance and ensures
-        // consistency of the database.
-        db.beginTransaction();
-        try {
-
-            ContentValues values = new ContentValues();
-            values.put(KEY_GYROSCOPE_X_VALUE, data.X);
-            values.put(KEY_GYROSCOPE_Y_VALUE, data.Y);
-            values.put(KEY_GYROSCOPE_Z_VALUE, data.Z);
-
-            db.insertOrThrow(TABLE_GYROSCOPE, null, values);
-            db.setTransactionSuccessful();
-        } catch (Exception e) {
-            Log.d(TAG, "Error while trying to add gyroscope data to database");
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public void addMagnetometerData(MagnetometerData data) {
-        // Create and/or open the database for writing
-        SQLiteDatabase db = getWritableDatabase();
-
-        // It's a good idea to wrap our insert in a transaction. This helps with performance and ensures
-        // consistency of the database.
-        db.beginTransaction();
-        try {
-
-            ContentValues values = new ContentValues();
-            values.put(KEY_AZIMUTH, data.azimuth);
-            values.put(KEY_PITCH, data.pitch);
-            values.put(KEY_ROLL, data.roll);
-
-            db.insertOrThrow(TABLE_MAGNETOMETER, null, values);
-            db.setTransactionSuccessful();
-        } catch (Exception e) {
-            Log.d(TAG, "Error while trying to add magnetometer data to database");
+            Log.d(TAG, "Error while trying to add sensor data to database");
         } finally {
             db.endTransaction();
         }
@@ -172,10 +118,7 @@ public class SensorDatabaseHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
         try {
-            // Order of deletions is important when foreign key relationships exist.
-            db.delete(TABLE_ACCELEROMETER, null, null);
-            db.delete(TABLE_GYROSCOPE, null, null);
-            db.delete(TABLE_MAGNETOMETER, null, null);
+            db.delete(TABLE_SENSORDATA, null, null);
             db.setTransactionSuccessful();
         } catch (Exception e) {
             Log.d(TAG, "Error while trying to delete all rows from all tables");
