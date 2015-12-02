@@ -17,12 +17,9 @@ public class SensorDatabaseHelper extends SQLiteOpenHelper{
 
     // Database Info
     private static final String DATABASE_NAME = "sensorDatabase";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Table Names
-    private static final String TABLE_ACCELEROMETER = "accelerometer";
-    private static final String TABLE_GYROSCOPE = "gyroscope";
-    private static final String TABLE_MAGNETOMETER = "magnetometer";
     private static final String TABLE_SENSORDATA = "sensorData";
 
     // sensorData Table Columns
@@ -60,10 +57,10 @@ public class SensorDatabaseHelper extends SQLiteOpenHelper{
                 KEY_ID + " INTEGER PRIMARY KEY," + // Define a primary key
                 KEY_ACCELEROMETER_X_VALUE + " REAL ," +
                 KEY_ACCELEROMETER_Y_VALUE + " REAL ," +
-                KEY_ACCELEROMETER_Z_VALUE + " REAL" +
+                KEY_ACCELEROMETER_Z_VALUE + " REAL ," +
                 KEY_GYROSCOPE_X_VALUE + " REAL ," +
                 KEY_GYROSCOPE_Y_VALUE + " REAL ," +
-                KEY_GYROSCOPE_Z_VALUE + " REAL" +
+                KEY_GYROSCOPE_Z_VALUE + " REAL ," +
                 KEY_AZIMUTH + " REAL ," +
                 KEY_PITCH + " REAL ," +
                 KEY_ROLL + " REAL" +
@@ -77,9 +74,6 @@ public class SensorDatabaseHelper extends SQLiteOpenHelper{
         //If older version of database exists, drop all old tables and recreate them
         if (oldVersion != newVersion) {
             // Simplest implementation is to drop all old tables and recreate them
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACCELEROMETER);
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_GYROSCOPE);
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_MAGNETOMETER);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_SENSORDATA);
             onCreate(db);
         }
