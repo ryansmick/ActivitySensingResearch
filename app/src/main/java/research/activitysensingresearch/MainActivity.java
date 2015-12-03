@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // Declare rotation current
     private float[] gravity = {0, (float) 9.81, 0};
 
+    Boolean isRunning = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     accelTimer.start();
                     gyroTimer.start();
                     orientationTimer.start();
+                    isRunning = true;
                 }
             });
 
@@ -114,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 @Override
                 public void onClick(View v) {
                     mSensorManager.unregisterListener(MainActivity.this);
+                    isRunning = false;
                 }
             });
 
@@ -217,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("InProgress", true);
+        outState.putBoolean("InProgress", isRunning);
     }
 
     @Override
