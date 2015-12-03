@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mStartButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //Delete all rows in all tables to correct current issue
+                    instance.deleteAllRowsFromAllTables();
                     mSensorManager.registerListener(MainActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
                     mSensorManager.registerListener(MainActivity.this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
                     mSensorManager.registerListener(MainActivity.this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
@@ -123,9 +125,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         //Get the current instance of the SensorDatabaseHelper
         instance = SensorDatabaseHelper.getInstance(getApplicationContext());
-
-        //Delete all rows in all tables to correct current issue
-        instance.deleteAllRowsFromAllTables();
 
     }
 
