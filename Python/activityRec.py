@@ -25,7 +25,7 @@ with open('walkingTable.csv', 'rb') as csvfile:
             i = i + 1
             if i==stop:
                 break
-            walking.append(word)
+            walking.append(float(word))
 
 
 # Load the data from the stairsTable.csv file
@@ -39,7 +39,7 @@ with open('stairsTable.csv', 'rb') as csvfile:
             i = i + 1
             if i==stop:
                 break
-            upstairs.append(word)
+            upstairs.append(float(word))
 
 # Load data from lyingDownTable.csv file
 with open('lyingDownTable.csv', 'rb') as csvfile:
@@ -52,7 +52,7 @@ with open('lyingDownTable.csv', 'rb') as csvfile:
             i = i + 1
             if i==stop:
                 break
-            lyingDown.append(word)
+            lyingDown.append(float(word))
 
 # Load test data
 with open('walkingTestData.csv', 'rb') as csvfile:
@@ -61,7 +61,7 @@ with open('walkingTestData.csv', 'rb') as csvfile:
     for word in reader:
         if i==stop:
             break
-        testData.append(word)
+        testData.append(float(word))
 
 trainingData.append(walking)
 trainingData.append(upstairs)
