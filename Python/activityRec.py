@@ -54,11 +54,20 @@ with open('lyingDownTable.csv', 'rb') as csvfile:
                 break
             lyingDown.append(word)
 
+# Load test data
+with open('walkingTestData.csv', 'rb') as csvfile:
+    reader = csv.reader(csvfile)
+    i = 0
+    for word in reader:
+        if i==stop:
+            break
+        testData.append(word)
+
 trainingData.append(walking)
 trainingData.append(upstairs)
 trainingData.append(lyingDown)
 
-print(trainingData)
+print(testData)
 
 clf = svm.SVC()
 clf.fit(trainingData, classifications)
