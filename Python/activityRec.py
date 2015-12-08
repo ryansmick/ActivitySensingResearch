@@ -12,15 +12,18 @@ walking=[]
 upstairs=[]
 lyingDown=[]
 
+stop = 180
 
 # Load the data from the walkingTable.csv file
 with open('walkingTable.csv', 'rb') as csvfile:
     reader = csv.reader(csvfile)
-    count = 0
+    i = 0
     for row in reader:
+        if i==stop:
+            break
         for word in row:
-            count = count + 1
-            if count==20:
+            i = i + 1
+            if i==stop:
                 break
             walking.append(word)
 
@@ -29,46 +32,26 @@ with open('walkingTable.csv', 'rb') as csvfile:
 with open('stairsTable.csv', 'rb') as csvfile:
     reader = csv.reader(csvfile)
     i = 0
-    count=0
-    foundTwenty=0
-    print("sos")
     for row in reader:
-        i=0
-        if foundTwenty==1:
-            print("If statement one")
+        if i==stop:
             break
         for word in row:
             i = i + 1
-            count = count + 1
-            if i==1:
-                continue
-            if count==20:
-                print("If statement two")
-                foundTwenty=1
+            if i==stop:
                 break
-            if foundTwenty==0:
-                upstairs.append(word)
+            upstairs.append(word)
 
 # Load data from lyingDownTable.csv file
 with open('lyingDownTable.csv', 'rb') as csvfile:
     reader = csv.reader(csvfile)
     i = 0
-    count=0
-    foundTwenty=0
     for row in reader:
-        i=0
-        if foundTwenty==1:
+        if i==stop:
             break
         for word in row:
             i = i + 1
-            count = count + 1
-            if i==1:
-                continue
-            if count==20:
-                foundTwenty=1
+            if i==stop:
                 break
-            if foundTwenty==0:
-                upstairs.append(word)
             lyingDown.append(word)
 
 trainingData.append(walking)
