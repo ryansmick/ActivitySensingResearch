@@ -8,9 +8,9 @@ from sklearn import svm
 trainingData = []
 classifications = ["Walking", "Upstairs", "Lying Down"]
 testData = []
-walking=[]
-upstairs=[]
-lyingDown=[]
+walking = []
+upstairs = []
+lyingDown = []
 
 stop = 180
 
@@ -19,14 +19,16 @@ with open('walkingTable.csv', 'rb') as csvfile:
     reader = csv.reader(csvfile)
     i = 0
     for row in reader:
-        if i==stop:
+        if i == stop:
             break
         for word in row:
-            i = i + 1
-            if i==stop:
+            if i == stop:
                 break
-            walking.append(float(word))
-
+            try:
+                walking.append(float(word))
+                i = i + 1
+            except ValueError, e:
+                print "Error: ", e, " in walking"
 
 # Load the data from the stairsTable.csv file
 with open('stairsTable.csv', 'rb') as csvfile:
@@ -36,11 +38,13 @@ with open('stairsTable.csv', 'rb') as csvfile:
         if i==stop:
             break
         for word in row:
-            i = i + 1
             if i==stop:
                 break
-            upstairs.append(float(word))
-
+            try:
+                upstairs.append(float(word))
+                i = i + 1
+            except ValueError, e:
+                print "Error: ", e, " in upstairs"
 # Load data from lyingDownTable.csv file
 with open('lyingDownTable.csv', 'rb') as csvfile:
     reader = csv.reader(csvfile)
@@ -49,25 +53,33 @@ with open('lyingDownTable.csv', 'rb') as csvfile:
         if i==stop:
             break
         for word in row:
-            i = i + 1
             if i==stop:
                 break
-            lyingDown.append(float(word))
+            try:
+                lyingDown.append(float(word))
+                i = i + 1
+            except ValueError, e:
+                print "Error: ", e, " in lying down"
+
 
 # Load test data
 with open('walkingTestData.csv', 'rb') as csvfile:
     reader = csv.reader(csvfile)
     i = 0
-    for word in reader:
-        if i==stop:
-            break
-        testData.append(float(word))
+    for row in reader:
+        for word in row:
+            if i==stop:
+                break
+            try:
+                testData.append(float(word))
+                i = i + 1
+            except TypeError, e:
+                print "Error: ", e, " in test data"
+
 
 trainingData.append(walking)
 trainingData.append(upstairs)
 trainingData.append(lyingDown)
-
-print(testData)
 
 clf = svm.SVC()
 clf.fit(trainingData, classifications)
